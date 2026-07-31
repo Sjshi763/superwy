@@ -183,7 +183,8 @@ app.get('/api/health', (req, res) => {
 });
 
 // 前端路由兜底（所有非API请求返回index.html）
-app.get('*', (req, res) => {
+// 使用中间件处理所有未被其他路由匹配的请求
+app.use((req, res) => {
   res.sendFile(path.join(__dirname, '../../frontend/dist/index.html'));
 });
 

@@ -1,5 +1,5 @@
 import { io, Socket } from 'socket.io-client';
-import type { SyncData, ScanStatus, TaskQueueState } from '../types';
+import type { SyncData, TaskQueueState } from '../types';
 
 class SocketService {
   private socket: Socket;

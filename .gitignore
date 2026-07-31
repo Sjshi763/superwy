@@ -4,3 +4,4 @@
 node_modules
 *.litematic
 config/
+frontend/dist/
