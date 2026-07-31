@@ -4,80 +4,79 @@
 
 ## 🏗️ 项目架构
 
-项目已完成前后端物理分离:
+项目采用前后端分离架构，支持一键部署：
 
 ```
 superwy/
-├── backend/                # 后端服务 (Node.js + Express + TypeScript)
+├── config/                # 配置文件目录
+│   └── config.json        # 统一配置文件
+│
+├── backend/               # 后端服务 (Node.js + Express + TypeScript)
 │   ├── src/
-│   │   ├── index.ts       # 主入口文件
-│   │   ├── db.ts          # 数据库模块
-│   │   ├── config.ts      # 配置文件
-│   │   └── types/         # TypeScript 类型定义
-│   ├── dist/              # 编译输出目录
-│   ├── uploads/           # 文件上传目录
+│   │   ├── index.ts      # 主入口文件
+│   │   ├── db.ts         # 数据库模块
+│   │   ├── config.ts     # 配置加载
+│   │   └── types/        # TypeScript 类型定义
+│   ├── dist/             # 编译输出目录
+│   ├── uploads/          # 文件上传目录
 │   ├── package.json
 │   └── tsconfig.json
 │
-├── frontend/              # 前端应用 (Vue 3 + TypeScript + Vite)
+├── frontend/             # 前端应用 (Vue 3 + TypeScript + Vite)
 │   ├── src/
-│   │   ├── components/    # Vue 组件
-│   │   ├── services/      # API 和 Socket 服务
-│   │   ├── types/         # TypeScript 类型
+│   │   ├── components/   # Vue 组件
+│   │   ├── services/     # API 和 Socket 服务
+│   │   ├── types/        # TypeScript 类型
 │   │   ├── App.vue
 │   │   └── main.ts
-│   ├── public/            # 静态资源 (blocks/items 图片)
+│   ├── public/           # 静态资源 (blocks/items 图片)
 │   ├── package.json
 │   └── vite.config.ts
 │
-├── docker-compose.yml     # Docker 编排文件
-├── .env.example          # 环境变量模板
+├── public/               # 全局静态资源 (游戏图片)
+├── docker-compose.yml    # Docker 编排文件
 └── README.md
 ```
 
 ## 🚀 快速开始
 
+### 一键启动（生产环境）
+
+```bash
+# 1. 安装依赖
+cd backend && npm install
+cd ../frontend && npm install
+
+# 2. 修改配置
+# 编辑 config/config.json 文件，填入实际配置
+
+# 3. 构建并启动
+cd frontend && npm run build
+cd ../backend && npm run build && npm start
+
+# 访问应用
+# 打开浏览器访问 http://localhost:3000
+```
+
 ### 开发环境启动
 
-**方式一: 直接启动 (推荐开发使用)**
+**方式一：前后端分离开发（推荐）**
 
-1. **克隆并进入项目**
-```bash
-cd superwy
-```
-
-2. **安装依赖**
-```bash
-# 后端
-cd backend
+# 1. 启动前端（新终端）
+cd frontend
 npm install
-
-# 前端
-cd ../frontend
-npm install
-```
-
-3. **配置环境变量**
-```bash
-cp .env.example .env
-# 编辑 .env 文件,填入实际配置
-```
-
-4. **启动后端服务**
-```bash
-cd backend
-npm run dev
-# 后端运行在 http://localhost:3000
-```
-
-5. **启动前端开发服务器**
-```bash
-cd ../frontend
-npm run dev
+npm run build
 # 前端运行在 http://localhost:5173
 ```
 
-**方式二: Docker 启动 (生产环境)**
+# 2. 启动后端
+```bash
+cd backend
+npm install
+npm run dev
+# 后端运行在 http://localhost:3000
+```
+**方式二：Docker 启动**
 
 ```bash
 # 构建并启动所有服务
@@ -90,20 +89,54 @@ docker-compose logs -f
 docker-compose down
 ```
 
-### 生产部署
+## ⚙️ 配置说明
 
-```bash
-# 1. 构建前端
-cd frontend
-npm run build
+### 配置文件
 
-# 2. 编译后端
-cd ../backend
-npm run build
+所有配置统一在 `config/config.json` 文件中管理：
 
-# 3. 启动生产服务
-npm start
+```json
+{
+  "host": "yourdomainhere",
+  "port": 25565,
+  "username": "microsoftaccountmail",
+  "version": "1.21",
+  "auth": "microsoft",
+  "semanticParser": {
+    "baseUrl": "https://dashscope.aliyuncs.com/compatible-mode/v1",
+    "model": "qwen3.5-plus",
+    "apiKey": "sk-xxx",
+    "timeoutMs": 20000
+  },
+  "resetPosition": { "x": 160, "y": 50, "z": 0 },
+  "gotoPathTimeoutMs": 24000,
+  "grabPathTimeoutMs": 24000,
+  "拟人": {
+    "enabled": false,
+    "lockDistance": 4,
+    "unlockDistance": 6,
+    "lookIntervalMs": 180
+  },
+  "areas": {
+    "left": { "name": "全物品左侧", "min": {...}, "max": {...} },
+    "right": { "name": "全物品右侧", "min": {...}, "max": {...} },
+    "bulk": { "name": "大宗仓库", "min": {...}, "max": {...} },
+    "unstackable": { "name": "不可堆叠区", "min": {...}, "max": {...} }
+  }
+}
 ```
+
+### 配置项说明
+
+| 配置项 | 说明 | 默认值 |
+|--------|------|--------|
+| `host` | Minecraft 服务器地址 | `yourdomainhere` |
+| `port` | Minecraft 服务器端口 | `25565` |
+| `username` | Minecraft 用户名 | `microsoftaccountmail` |
+| `auth` | 认证方式 | `microsoft` |
+| `semanticParser` | LLM API 配置 | - |
+| `resetPosition` | 机器人重置位置 | `{x:160, y:50, z:0}` |
+| `areas` | 扫描区域配置 | - |
 
 ## 📋 功能特性
 
@@ -149,8 +182,8 @@ npm start
 - **Socket.IO Client** - 实时通信
 
 ### 部署
-- **Docker** - 容器化
-- **nginx** - 前端静态资源服务器
+- **单端口部署** - 前后端整合，只需一个端口
+- **静态文件托管** - 后端直接托管前端构建产物
 
 ## 📖 API 文档
 
@@ -203,20 +236,6 @@ GET /api/health
 - 启用 HTTPS
 - 配置防火墙规则
 
-## 📝 环境变量
-
-| 变量名 | 说明 | 默认值 |
-|--------|------|--------|
-| `MC_HOST` | Minecraft 服务器地址 | `yourdomainhere` |
-| `MC_PORT` | Minecraft 服务器端口 | `25565` |
-| `MC_USERNAME` | Minecraft 用户名 | `microsoftaccountmail` |
-| `MC_AUTH` | 认证方式 | `microsoft` |
-| `LLM_API_BASE_URL` | LLM API 地址 | - |
-| `LLM_MODEL` | LLM 模型名称 | `qwen3.5-plus` |
-| `LLM_API_KEY` | LLM API 密钥 | - |
-| `WEB_PORT` | 后端端口 | `3000` |
-| `FRONTEND_URL` | 前端 URL | `http://localhost:5173` |
-
 ## 🛠️ 开发指南
 
 ### 添加新的 API 端点
@@ -236,6 +255,31 @@ GET /api/health
 - 后端类型: `backend/src/types/index.ts`
 - 前端类型: `frontend/src/types/index.ts`
 - 保持两端类型定义同步
+
+## 📝 部署流程
+
+### 生产部署
+
+```bash
+# 1. 构建前端
+cd frontend
+npm run build
+
+# 2. 编译后端
+cd ../backend
+npm run build
+
+# 3. 启动生产服务
+npm start
+```
+
+应用将运行在 `http://localhost:3000`，前端和后端统一由 3000 端口提供服务。
+
+### Docker 部署
+
+```bash
+docker-compose up -d --build
+```
 
 ## 📄 许可证
 
