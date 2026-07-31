@@ -26,6 +26,10 @@ app.use(express.json());
 // 静态文件服务 (用于图片资源)
 app.use('/assets', express.static(path.join(__dirname, '../../public')));
 
+// 托管前端构建后的静态文件
+const frontendDist = path.join(__dirname, '../../frontend/dist');
+app.use(express.static(frontendDist));
+
 // 任务队列状态 (简化版,实际应从 taskQueue 模块导入)
 const getTaskQueueState = (): TaskQueueState => ({
   runningTask: null,
@@ -176,6 +180,11 @@ app.post('/api/litematica', upload.single('file'), async (req, res) => {
 // 健康检查端点
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
+});
+
+// 前端路由兜底（所有非API请求返回index.html）
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../../frontend/dist/index.html'));
 });
 
 // 启动服务器
