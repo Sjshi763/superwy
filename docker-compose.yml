@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  backend:
+    build: ./backend
+    container_name: superwy-backend
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - WEB_PORT=3000
+      - MC_HOST=${MC_HOST}
+      - MC_PORT=${MC_PORT}
+      - MC_USERNAME=${MC_USERNAME}
+      - MC_AUTH=${MC_AUTH:-microsoft}
+      - LLM_API_BASE_URL=${LLM_API_BASE_URL}
+      - LLM_MODEL=${LLM_MODEL}
+      - LLM_API_KEY=${LLM_API_KEY}
+    volumes:
+      - ./inventory.db:/app/inventory.db
+      - ./list.csv:/app/list.csv
+      - ./main_storage_itemscsv.txt:/app/main_storage_itemscsv.txt
+      - ./public:/app/public
+
+  frontend:
+    build: ./frontend
+    container_name: superwy-frontend
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    environment:
+      - BACKEND_URL=http://backend:3000
