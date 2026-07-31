@@ -15,6 +15,11 @@
       <el-tab-pane label="🏗️ 材料计算器" name="litematica">
         <LitematicaTab />
       </el-tab-pane>
+
+      <!-- 系统设置标签 -->
+      <el-tab-pane label="⚙️ 系统设置" name="settings">
+        <SettingsTab />
+      </el-tab-pane>
     </el-tabs>
   </div>
 </template>
@@ -24,6 +29,7 @@ import { ref } from 'vue';
 import InventoryTab from './components/InventoryTab.vue';
 import MapTab from './components/MapTab.vue';
 import LitematicaTab from './components/LitematicaTab.vue';
+import SettingsTab from './components/SettingsTab.vue';
 
 const activeTab = ref('inventory');
 </script>

@@ -7,8 +7,8 @@ import path from 'path';
 import fs from 'fs';
 
 import db from './db';
-import config from './config';
-import { ScanStatus, TaskQueueState } from './types';
+import config, { reloadConfig, saveConfig } from './config';
+import { ScanStatus, TaskQueueState, AppConfig } from './types';
 
 const app = express();
 const server = http.createServer(app);
@@ -182,9 +182,54 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
+// 配置管理端点
+// 获取当前配置
+app.get('/api/config', (req, res) => {
+  try {
+    res.json({ success: true, config });
+  } catch (error: any) {
+    console.error('[API错误]', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// 更新配置
+app.put('/api/config', (req, res) => {
+  try {
+    const newConfig = req.body as AppConfig;
+
+    // 验证必要的配置字段
+    if (!newConfig.host || !newConfig.username || !newConfig.version) {
+      return res.status(400).json({
+        success: false,
+        error: '缺少必要的配置字段（host, username, version）'
+      });
+    }
+
+    // 保存配置
+    saveConfig(newConfig);
+
+    // 重新加载配置
+    const updatedConfig = reloadConfig();
+
+    res.json({ success: true, config: updatedConfig });
+  } catch (error: any) {
+    console.error('[API错误]', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
 // 前端路由兜底（所有非API请求返回index.html）
 // 使用中间件处理所有未被其他路由匹配的请求
-app.use((req, res) => {
+app.use((req, res, next) => {
+  // 如果是API请求但没有匹配到路由，返回404
+  if (req.path.startsWith('/api')) {
+    return res.status(404).json({
+      success: false,
+      error: 'API路由未找到'
+    });
+  }
+  // 其他请求返回前端页面
   res.sendFile(path.join(__dirname, '../../frontend/dist/index.html'));
 });
 
@@ -200,8 +245,7 @@ server.on('error', (err: any) => {
 });
 
 server.listen(WEB_PORT, () => {
-  console.log(`后端服务已启动: http://localhost:${WEB_PORT}`);
-  console.log(`前端资源代理: ${process.env.FRONTEND_URL || 'http://localhost:5173'}`);
+  console.log(`服务已启动: http://localhost:${WEB_PORT}`);
 });
 
 // 优雅关闭

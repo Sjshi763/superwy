@@ -1,4 +1,4 @@
-import type { ContainerItem } from '../types';
+import type { ContainerItem, AppConfig } from '../types';
 
 const API_BASE = '/api';
 
@@ -55,6 +55,42 @@ class ApiService {
   async healthCheck(): Promise<{ status: string; timestamp: string }> {
     const response = await fetch(`${API_BASE}/health`);
     return await response.json();
+  }
+
+  // 获取配置
+  async getConfig(): Promise<{
+    success: boolean;
+    config?: AppConfig;
+    error?: string;
+  }> {
+    try {
+      const response = await fetch(`${API_BASE}/config`);
+      return await response.json();
+    } catch (error: any) {
+      console.error('[API错误]', error);
+      return { success: false, error: error.message };
+    }
+  }
+
+  // 更新配置
+  async updateConfig(config: AppConfig): Promise<{
+    success: boolean;
+    config?: AppConfig;
+    error?: string;
+  }> {
+    try {
+      const response = await fetch(`${API_BASE}/config`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(config)
+      });
+      return await response.json();
+    } catch (error: any) {
+      console.error('[API错误]', error);
+      return { success: false, error: error.message };
+    }
   }
 }
 

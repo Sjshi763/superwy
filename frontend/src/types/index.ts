@@ -94,3 +94,44 @@ export interface SyncData {
   status: ScanStatus;
   taskQueue: TaskQueueState;
 }
+
+// 配置类型定义
+export interface Position {
+  x: number;
+  y: number;
+  z: number;
+}
+
+export interface ScanArea {
+  name: string;
+  min: Position;
+  max: Position;
+}
+
+export interface SemanticParserConfig {
+  baseUrl: string;
+  model: string;
+  apiKey: string;
+  timeoutMs: number;
+}
+
+export interface HumanBehaviorConfig {
+  enabled: boolean;
+  lockDistance: number;
+  unlockDistance: number;
+  lookIntervalMs: number;
+}
+
+export interface AppConfig {
+  host: string;
+  port: number;
+  username: string;
+  version: string;
+  auth: 'microsoft' | 'offline';
+  semanticParser: SemanticParserConfig;
+  resetPosition: Position;
+  gotoPathTimeoutMs: number;
+  grabPathTimeoutMs: number;
+  拟人: HumanBehaviorConfig;
+  areas: Record<string, ScanArea>;
+}
