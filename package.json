@@ -15,7 +15,7 @@
     "minecraft-data": "^3.105.0",
     "mineflayer": "^4.35.0",
     "mineflayer-pathfinder": "^2.4.5",
-    "multer": "^2.1.1",
+    "multer": "^2.2.0",
     "prismarine-nbt": "^2.8.0",
     "socket.io": "^4.8.3",
     "varint": "^6.0.0"
