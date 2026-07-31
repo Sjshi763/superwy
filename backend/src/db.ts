@@ -1,10 +1,11 @@
 import Database from 'better-sqlite3';
+import type { Database as DatabaseType } from 'better-sqlite3';
 import fs from 'fs';
 import path from 'path';
 
 // 数据库实例
 const dbPath = path.join(__dirname, '../../inventory.db');
-const db = new Database(dbPath);
+const db: DatabaseType = new Database(dbPath);
 
 // 初始化表结构
 db.exec(`
